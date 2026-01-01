@@ -1,48 +1,49 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<!-- Basic Page Needs
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-		<meta charset="utf-8" />
-		<title>Chat!</title>
-		<meta name="description" content="" />
-		<meta name="author" content="" />
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"> <!-- اگر پارسی می‌خوای، dir="rtl" اضافه کن -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VC Club - Hacker Chat</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>VC Club - Enter the Matrix</header>
+    <div id="chat"></div>
+    <div id="input">
+        <input id="message" placeholder="پیامت رو هک کن...">
+        <button onclick="sendMessage()">Send Hack</button>
+    </div>
+    <script>
+        const ws = new WebSocket('wss://your-server-url/parties/chat/vc-club'); // عوض کن با URL واقعی
 
-		<!-- Mobile Specific Metas
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+        ws.onopen = () => {
+            console.log('Connected to VC Club Matrix');
+        };
 
-		<!-- FONT
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+        ws.onmessage = (event) => {
+            const chat = document.getElementById('chat');
+            const msg = document.createElement('div');
+            msg.classList.add('message');
+            msg.textContent = event.data; // اگر JSON باشه، parse کن
+            chat.appendChild(msg);
+            chat.scrollTop = chat.scrollHeight;
+        };
 
-		<!-- CSS
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-		<link rel="stylesheet" href="css/normalize.css" />
-		<link rel="stylesheet" href="css/skeleton.css" />
-		<link rel="stylesheet" href="styles.css" />
+        ws.onclose = () => {
+            console.log('Disconnected from the Matrix');
+        };
 
-		<!-- Favicon
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-		<link rel="icon" type="image/ico" href="favicon.ico" />
-		<script src="/dist/index.js" type="module"></script>
-	</head>
-	<body>
-		<!-- Primary Page Layout
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-		<div class="container" style="width: 95%; height: 100%">
-			<div class="row" style="height: 100%">
-				<div class="one-third column" style="margin-top: 25%">
-					<h4><b>Chat</b>, powered by Durable Objects</h4>
-					<p>
-						This chat room is hosted in a single Durable Object, running in one
-						process in one machine in one location, very close to the users.
-					</p>
-				</div>
-				<div class="two-thirds column" id="root"></div>
-			</div>
-		</div>
+        function sendMessage() {
+            const input = document.getElementById('message');
+            const msg = input.value;
+            if (msg) {
+                ws.send(msg); // یا JSON.stringify اگر لازم
+                input.value = '';
+            }
+        }
 
-		<!-- End Document
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-	</body>
+        // اگر بک‌اند پیام‌های قبلی رو می‌فرسته، اینجا هندل کن
+    </script>
+</body>
 </html>

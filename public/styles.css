@@ -1,125 +1,77 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl"> <!-- اگر پارسی می‌خوای، dir="rtl" اضافه کن -->
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VC Club - Hacker Chat</title>
-    <style>
-        body {
-            background-color: #000000;
-            color: #BB86FC; /* بنفش نئون */
-            font-family: 'Courier New', monospace;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
-        header {
-            background: linear-gradient(to right, #000000, #6200EA); /* گرادیانت مشکی به بنفش */
-            padding: 10px;
-            text-align: center;
-            font-size: 24px;
-            text-shadow: 0 0 10px #BB86FC;
-            animation: glitch 2s infinite;
-        }
-        #chat {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-            background: url('https://www.transparenttextures.com/patterns/black-thread.png'); /* بافت هکری */
-        }
-        .message {
-            margin: 5px 0;
-            padding: 8px;
-            border-radius: 5px;
-            background: rgba(98, 0, 234, 0.1); /* بنفش شفاف */
-            animation: fadeIn 0.5s;
-            text-shadow: 0 0 5px #BB86FC;
-        }
-        .message:hover {
-            animation: glitch 0.5s;
-        }
-        #input {
-            background-color: #121212;
-            border-top: 1px solid #BB86FC;
-            padding: 10px;
-            display: flex;
-        }
-        #message {
-            flex: 1;
-            background: transparent;
-            border: 1px solid #BB86FC;
-            color: #BB86FC;
-            font-family: monospace;
-            padding: 5px;
-        }
-        button {
-            background: #BB86FC;
-            color: #000000;
-            border: none;
-            padding: 5px 15px;
-            cursor: pointer;
-            margin-left: 5px;
-            font-family: monospace;
-            transition: transform 0.2s;
-        }
-        button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 10px #BB86FC;
-        }
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(2px, -2px); }
-            60% { transform: translate(-2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
-</head>
-<body>
-    <header>VC Club - Enter the Matrix</header>
-    <div id="chat"></div>
-    <div id="input">
-        <input id="message" placeholder="پیامت رو هک کن...">
-        <button onclick="sendMessage()">Send Hack</button>
-    </div>
-    <script>
-        const ws = new WebSocket('wss://your-server-url/parties/chat/vc-club'); // عوض کن با URL واقعی
-
-        ws.onopen = () => {
-            console.log('Connected to VC Club Matrix');
-        };
-
-        ws.onmessage = (event) => {
-            const chat = document.getElementById('chat');
-            const msg = document.createElement('div');
-            msg.classList.add('message');
-            msg.textContent = event.data; // اگر JSON باشه، parse کن
-            chat.appendChild(msg);
-            chat.scrollTop = chat.scrollHeight;
-        };
-
-        ws.onclose = () => {
-            console.log('Disconnected from the Matrix');
-        };
-
-        function sendMessage() {
-            const input = document.getElementById('message');
-            const msg = input.value;
-            if (msg) {
-                ws.send(msg); // یا JSON.stringify اگر لازم
-                input.value = '';
-            }
-        }
-
-        // اگر بک‌اند پیام‌های قبلی رو می‌فرسته، اینجا هندل کن
-    </script>
-</body>
-</html>
+/* styles.css */
+body {
+    background-color: #000000;
+    color: #BB86FC; /* بنفش نئون */
+    font-family: 'Courier New', monospace;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+header {
+    background: linear-gradient(to right, #000000, #6200EA); /* گرادیانت مشکی به بنفش */
+    padding: 10px;
+    text-align: center;
+    font-size: 24px;
+    text-shadow: 0 0 10px #BB86FC;
+    animation: glitch 2s infinite;
+}
+#chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    background: url('https://www.transparenttextures.com/patterns/black-thread.png'); /* بافت هکری */
+}
+.message {
+    margin: 5px 0;
+    padding: 8px;
+    border-radius: 5px;
+    background: rgba(98, 0, 234, 0.1); /* بنفش شفاف */
+    animation: fadeIn 0.5s;
+    text-shadow: 0 0 5px #BB86FC;
+}
+.message:hover {
+    animation: glitch 0.5s;
+}
+#input {
+    background-color: #121212;
+    border-top: 1px solid #BB86FC;
+    padding: 10px;
+    display: flex;
+}
+#message {
+    flex: 1;
+    background: transparent;
+    border: 1px solid #BB86FC;
+    color: #BB86FC;
+    font-family: monospace;
+    padding: 5px;
+}
+button {
+    background: #BB86FC;
+    color: #000000;
+    border: none;
+    padding: 5px 15px;
+    cursor: pointer;
+    margin-left: 5px;
+    font-family: monospace;
+    transition: transform 0.2s;
+}
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px #BB86FC;
+}
+@keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(2px, -2px); }
+    60% { transform: translate(-2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

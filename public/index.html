@@ -1,49 +1,118 @@
 <!-- index.html -->
 <!DOCTYPE html>
-<html lang="fa" dir="rtl"> <!-- اگر پارسی می‌خوای، dir="rtl" اضافه کن -->
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VC Club - Hacker Chat</title>
+    <title>VC Club - Hacker Matrix</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Yekan+Bakh&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <header>VC Club - Enter the Matrix</header>
+
+    <div id="noise"></div>
+    <div id="scanline"></div>
+
+    <header>
+        <i class="fas fa-terminal"></i>
+        VC Club - Enter the Matrix
+        <span class="blink">_</span>
+    </header>
+
     <div id="chat"></div>
+
     <div id="input">
-        <input id="message" placeholder="پیامت رو هک کن...">
-        <button onclick="sendMessage()">Send Hack</button>
+        <input id="message" placeholder="پیامت رو هک کن..." autocomplete="off">
+        <button id="sendBtn" onclick="sendMessage()">
+            <i class="fas fa-paper-plane"></i> Send Hack
+        </button>
+        <button id="clearBtn" onclick="clearChat()" title="پاک کردن چت">
+            <i class="fas fa-trash"></i>
+        </button>
     </div>
+
+    <div id="status">
+        <span id="statusText">در حال اتصال به سرور...</span>
+    </div>
+
     <script>
-        const ws = new WebSocket('wss://your-server-url/parties/chat/vc-club'); // عوض کن با URL واقعی
+        const chat = document.getElementById('chat');
+        const messageInput = document.getElementById('message');
+        const statusText = document.getElementById('statusText');
+
+        // WebSocket Connection
+        const ws = new WebSocket('wss://your-server-url/parties/chat/vc-club');
 
         ws.onopen = () => {
-            console.log('Connected to VC Club Matrix');
+            statusText.innerHTML = '<i class="fas fa-plug"></i> متصل به ماتریس';
+            statusText.style.color = '#00ff00';
         };
 
         ws.onmessage = (event) => {
-            const chat = document.getElementById('chat');
-            const msg = document.createElement('div');
-            msg.classList.add('message');
-            msg.textContent = event.data; // اگر JSON باشه، parse کن
-            chat.appendChild(msg);
-            chat.scrollTop = chat.scrollHeight;
+            addMessage(event.data, 'incoming');
         };
 
         ws.onclose = () => {
-            console.log('Disconnected from the Matrix');
+            statusText.innerHTML = '<i class="fas fa-unlink"></i> قطع از ماتریس';
+            statusText.style.color = '#ff5555';
         };
 
+        function addMessage(text, type) {
+            const msg = document.createElement('div');
+            msg.classList.add('message', type);
+
+            const time = new Date().toLocaleTimeString('fa-IR');
+            msg.innerHTML = `
+                <span class="msg-time">${time}</span>
+                <span class="msg-text">${text}</span>
+                <span class="msg-icon">
+                    ${type === 'outgoing' ? '<i class="fas fa-user-secret"></i>' : '<i class="fas fa-robot"></i>'}
+                </span>
+            `;
+            chat.appendChild(msg);
+            chat.scrollTop = chat.scrollHeight;
+
+            // افکت تایپ
+            const msgText = msg.querySelector('.msg-text');
+            const original = msgText.innerText;
+            msgText.innerText = '';
+            let i = 0;
+            const typer = setInterval(() => {
+                if (i < original.length) {
+                    msgText.innerText += original.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(typer);
+                }
+            }, 30);
+        }
+
         function sendMessage() {
-            const input = document.getElementById('message');
-            const msg = input.value;
+            const msg = messageInput.value.trim();
             if (msg) {
-                ws.send(msg); // یا JSON.stringify اگر لازم
-                input.value = '';
+                ws.send(msg);
+                addMessage(msg, 'outgoing');
+                messageInput.value = '';
             }
         }
 
-        // اگر بک‌اند پیام‌های قبلی رو می‌فرسته، اینجا هندل کن
+        function clearChat() {
+            chat.innerHTML = '';
+        }
+
+        // ارسال با Enter
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // افکت focus روی input
+        messageInput.addEventListener('focus', () => {
+            messageInput.style.boxShadow = '0 0 15px #bb86fc';
+        });
+        messageInput.addEventListener('blur', () => {
+            messageInput.style.boxShadow = 'none';
+        });
     </script>
 </body>
 </html>
